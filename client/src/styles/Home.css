@@ -1,0 +1,40 @@
+.home-container {
+  max-width: 60vw;
+  margin:10px auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.home-textarea {
+  width: 100%;
+  max-width: 100%;
+  resize: vertical;
+  padding: 10px;
+  font-size: 16px;
+  font-family: inherit;
+  line-height: 1.5;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.home-button {
+  align-self: center;
+  padding: 10px 15px;
+  font-size: 25px;
+  font-weight: 700;
+  background-color: #07bc6a; /* blue-600 */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.home-button:hover {
+  transform: scale(1.05);
+}

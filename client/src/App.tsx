@@ -4,12 +4,14 @@ import { Home } from './pages/Home';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 
+import './styles/App.css';
+
 const App: React.FC = () => {
   return (
     <Router>
-      <div className="flex flex-col min-h-screen">
+      <div className="app-container">
         <Navbar />
-        <main className="flex-grow p-4">
+        <main className="app-content">
           <Routes>
             <Route path="/home" element={<Home />} />
             <Route path="/" element={<Navigate to="/home" replace />} />
