@@ -12,9 +12,12 @@
     font-size: 30px;
     font-weight: 700;
     position: absolute;
+    padding: 30px 30px;
     left: 50%;
     transform: translateX(-50%);
     cursor: pointer;
+    color: white;
+    text-decoration: none;
 }
 
 .navbar-links {

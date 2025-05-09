@@ -1,15 +1,17 @@
 .home-container {
   max-width: 60vw;
-  margin:10px auto;
+  margin: 10px auto;
   padding: 10px;
   display: flex;
   flex-direction: column;
   gap: 25px;
 }
 
+
 .home-textarea {
   width: 100%;
   max-width: 100%;
+  height: 50vh;
   resize: vertical;
   padding: 10px;
   font-size: 16px;
@@ -27,7 +29,7 @@
   padding: 10px 15px;
   font-size: 25px;
   font-weight: 700;
-  background-color: #07bc6a; /* blue-600 */
+  background-color: #07bc6a;
   color: white;
   border: none;
   border-radius: 5px;
@@ -37,4 +39,9 @@
 
 .home-button:hover {
   transform: scale(1.05);
+}
+
+.parsed-list {
+  margin: 10px;
+  font-size: 20px;
 }

@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
+import { parseFilmText, FilmEntry } from '../components/Parser';
+import { generateCSV, downloadCSV } from '../utils/csvGenerator';
 import '../styles/Home.css';
 
 export const Home: React.FC = () => {
     const [input, setInput] = useState('');
-    const [parsed, setParsed] = useState<{ title: string; rating: number }[]>([]);
+    const [parsed, setParsed] = useState<FilmEntry[]>([]);
 
-    const parseText = () => {
-        const pattern = /([^\(\-:,]+)[\s\-:]*\(?(\d+(?:\.\d+)?)\/10\)?/gi;
-        const results = Array.from(input.matchAll(pattern)).map(([, title, rating]) => ({
-            title: title.trim(),
-            rating: parseFloat(rating),
-        }));
-        setParsed(results);
+    const handleGenerate = () => {
+        const parsedFilms = parseFilmText(input);
+        setParsed(parsedFilms);
+    };
+
+    const handleDownload = () => {
+        const csv = generateCSV(parsed);
+        downloadCSV(csv);
     };
 
     return (
@@ -23,16 +26,26 @@ export const Home: React.FC = () => {
                 rows={6}
                 className="home-textarea"
             />
-            <button onClick={parseText} className="home-button">
-                Submit
+            {/* <button onClick={handleGenerate} className="home-button">
+                Create CSV
+            </button> */}
+            <button onClick={handleGenerate} className="home-button">
+                Preview
             </button>
-            <ul className="parsed-list">
+               <ul className="parsed-list">
                 {parsed.map((movie, idx) => (
                     <li key={idx}>
-                        {movie.title} - {movie.rating}/10
+                         {movie.title} ({movie.year || 'n/a'}) – {movie.rating10 || 'n/a'}/10
+                         {movie.review ? <span> — {movie.review}</span> : null}
                     </li>
                 ))}
             </ul>
+            {parsed.length > 0 && (
+                <button onClick={handleDownload} className="home-button">
+                    Download CSV
+                </button>
+            )}
+         
         </div>
     );
 };
