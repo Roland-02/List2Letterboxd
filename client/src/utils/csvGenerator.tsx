@@ -1,11 +1,10 @@
 import { FilmEntry } from '../components/Parser';
 
 export function generateCSV(data: FilmEntry[]): string {
-  const header = ['Title', 'Year', 'Rating10', 'Review'];
+  const header = ['Title', 'Rating', 'Review', 'Liked'];
   const rows = data.map((film) => [
     escapeCSV(film.title),
-    film.year || '',
-    film.rating10?.toString() || '',
+    film.rating?.toString() || '',
     escapeCSV(film.review || ''),
   ]);
 
