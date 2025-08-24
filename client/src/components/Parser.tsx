@@ -1,4 +1,5 @@
 export type FilmEntry = {
+  tmdbId?: number;
   title: string;
   rating?: number; // normalized to /5 with .5 steps (e.g. 7/10 -> 3.5)
   review?: string;
@@ -16,7 +17,7 @@ export function parseFilmText(input: string): FilmEntry[] {
   for (let line of lines) {
     // 0) Strip bullets/checkboxes ONLY (don't infer "liked")
     line = line.replace(
-      /^\s*(?:[-*•]+|\d+[.)])?\s*(?:\[(?:x|X|✓|✔|\s)?\]|[✓✔✅☑️])?\s*/,
+      /^\s*(?:[-*•]+|\d+[.)])?\s*(?:\[(?:x|X|\s)?\])?\s*/,
       ""
     );
 
@@ -97,4 +98,56 @@ export function parseFilmText(input: string): FilmEntry[] {
   }
 
   return results;
+}
+
+export async function matchWithTmdb(
+  entries: FilmEntry[],
+  opts?: { baseUrl?: string; language?: string; concurrency?: number }
+): Promise<FilmEntry[]> {
+  const baseUrl = opts?.baseUrl ?? (import.meta as any)?.env?.VITE_API_BASE ?? "http://localhost:3001";
+  const language = opts?.language ?? "en-US";
+  const concurrency = opts?.concurrency ?? 6;
+
+  // peel trailing (YYYY) if present for better matching
+  const peelYear = (t: string) => {
+    const m = t.match(/\((\d{4})\)\s*$/);
+    if (m) {
+      const y = Number(m[1]);
+      if (y >= 1870 && y <= 2100) {
+        return { clean: t.replace(/\s*\(\d{4}\)\s*$/, "").trim(), year: y };
+      }
+    }
+    return { clean: t.trim(), year: undefined as number | undefined };
+  };
+
+  const queries = entries.map(e => {
+    const { clean, year } = peelYear(e.title);
+    return { title: clean, year };
+  });
+
+  const res = await fetch(`${baseUrl}/tmdb/match`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ queries, language, concurrency })
+  });
+
+  if (!res.ok) {
+    // If the API is down, just return originals unchanged.
+    console.error("TMDB match error:", await res.text());
+    return entries;
+  }
+
+  const data = await res.json() as {
+    matches: Array<{ input_title: string; title?: string; tmdb_id?: number }>;
+  };
+
+  // zip results back to entries (order preserved)
+  return entries.map((e, i) => {
+    const m = data.matches?.[i];
+    return {
+      ...e,
+      title: m?.title || e.title,     // replace with canonical title if found
+      tmdbId: m?.tmdb_id ?? e.tmdbId, // add tmdb id
+    };
+  });
 }

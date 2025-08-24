@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
-import { parseFilmText, FilmEntry } from '../components/Parser';
+import { parseFilmText, FilmEntry, matchWithTmdb} from '../components/Parser';
 import { generateCSV, downloadCSV } from '../utils/csvGenerator';
 import '../styles/Home.css';
 
 export const Home: React.FC = () => {
     const [input, setInput] = useState('');
     const [parsed, setParsed] = useState<FilmEntry[]>([]);
+    const [loading, setLoading] = useState(false);
 
-    const handleGenerate = () => {
-        const parsedFilms = parseFilmText(input);
-        setParsed(parsedFilms);
+    const handleGenerate = async () => {
+        setLoading(true);
+        try {
+            const parsedFilms = parseFilmText(input);
+            const enriched = await matchWithTmdb(parsedFilms);
+            setParsed(enriched);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleDownload = () => {
@@ -25,8 +32,9 @@ export const Home: React.FC = () => {
                 placeholder="Paste your films and ratings here..."
                 className="home-textarea"
             />
-            <button onClick={handleGenerate} className="home-button">
-                Preview
+
+            <button onClick={handleGenerate} className="home-button" disabled={loading}>
+                {loading ? 'Parsing...' : 'Preview'}
             </button>
 
             {parsed.length > 0 && (
