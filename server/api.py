@@ -101,8 +101,11 @@ def match_one(title: str, *, language: str) -> Dict[str, Any]:
         "candidates": [],
     }
 
-    # prepare compact candidates (top 5)
+    # prepare compact candidates (top 5) and calculate similarity scores
     compact_candidates: List[Dict[str, Any]] = []
+    best_similarity = 0.0
+    close_matches = 0  # Count how many matches are close to the best match
+    
     for res in (hits or [])[:5]:
         rd = res.get("release_date")
         year = int(rd[:4]) if isinstance(rd, str) and len(rd) >= 4 and rd[:4].isdigit() else None
@@ -111,17 +114,28 @@ def match_one(title: str, *, language: str) -> Dict[str, Any]:
         summary = overview.split('.')[0] if overview else ""
         if len(summary) > 100:
             summary = summary[:97] + "..."
+        
+        # Calculate similarity for this result
+        result_title = res.get("title") or ""
+        similarity = _similarity(clean, result_title)
+        
+        if best and res.get("id") == best.get("id"):
+            best_similarity = similarity
+        
         compact_candidates.append({
             "title": res.get("title"),
             "tmdb_id": res.get("id"),
             "release_year": year,
             "summary": summary,
+            "similarity": similarity,
         })
+    
     out["candidates"] = compact_candidates
 
     if not best:
         return out
 
+    # Always set the best match automatically
     out["title"] = best.get("title")
     out["tmdb_id"] = best.get("id")
     rd = best.get("release_date")

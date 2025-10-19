@@ -81,9 +81,8 @@ export const Home: React.FC = () => {
                         <tbody>
                             {parsed.map((movie, idx) => {
                                 const hasMultipleCandidates = (movie.candidates?.length || 0) > 1;
-                                const isAmbiguous = hasMultipleCandidates && !movie.tmdbId;
                                 return (
-                                <tr key={idx} className={isAmbiguous ? 'row-ambiguous' : undefined}>
+                                <tr key={idx} className={hasMultipleCandidates ? 'row-ambiguous' : undefined}>
                                     <td>
                                         {hasMultipleCandidates ? (
                                             <button
@@ -179,7 +178,7 @@ export const Home: React.FC = () => {
                     {pickerIndex !== null && (
                       <div className="modal-backdrop" onClick={() => setPickerIndex(null)}>
                         <div className="modal" onClick={(e) => e.stopPropagation()}>
-                          <h3>Pick the correct title</h3>
+                          <h3>Pick Correct Title</h3>
                           <ul className="candidate-list">
                             {(parsed[pickerIndex].candidates || []).map((c) => (
                               <li key={c.tmdbId}>
