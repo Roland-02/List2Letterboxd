@@ -72,9 +72,9 @@ export const Home: React.FC = () => {
                         <thead>
                             <tr>
                                 <th>Title</th>
-                                <th>Rating</th>
+                                <th>Rating (/5)</th>
                                 <th>Review</th>
-                                <th>Liked</th>
+                                <th>Loved it</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -139,16 +139,18 @@ export const Home: React.FC = () => {
                                         />
                                     </td>
                                     <td>
-                                        <input
-                                            type="checkbox"
-                                            checked={movie.liked || false}
-                                            onChange={(e) => {
+                                        <button
+                                            type="button"
+                                            className={`heart-button ${movie.liked ? 'loved' : ''}`}
+                                            onClick={() => {
                                                 const updated = [...parsed];
-                                                updated[idx].liked = e.target.checked;
+                                                updated[idx].liked = !movie.liked;
                                                 setParsed(updated);
                                             }}
-                                            className="cell-input"
-                                        />
+                                            title={movie.liked ? "Loved it" : "Click to love"}
+                                        >
+                                            ♥
+                                        </button>
                                     </td>
                                 </tr>
                             );})}
