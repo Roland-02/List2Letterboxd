@@ -1,5 +1,5 @@
 .home-container {
-  max-width: 60vw;
+  max-width: 75vw;
   margin: 10px auto;
   padding: 10px;
   display: flex;
@@ -68,21 +68,21 @@
 .preview-table td {
   border: 1px solid #ccc;
   padding: 8px;
-  text-align: left;
+  text-align: center;
 }
 
 .preview-table th {
   background-color: #f3f4f6; /* light gray */
 }
 
-.preview-table th:nth-child(2),
+/* .preview-table th:nth-child(2),
 .preview-table td:nth-child(2) {
   text-align: center;
-}
+} */
 
-.preview-table td:nth-child(2) .cell-input {
+/* .preview-table td:nth-child(2) .cell-input {
   text-align: center;
-}
+} */
 
 .preview-table td {
   background-color: #ffffff;

@@ -4,8 +4,14 @@ import { generateCSV, downloadCSV } from '../utils/csvGenerator';
 import '../styles/Home.css';
 
 export const Home: React.FC = () => {
-    const [input, setInput] = useState('');
-    const [parsed, setParsed] = useState<FilmEntry[]>([]);
+    const [input, setInput] = useState(() => {
+        const cached = localStorage.getItem('List2letterboxd_input');
+        return cached || '';
+    });
+    const [parsed, setParsed] = useState<FilmEntry[]>(() => {
+        const cached = localStorage.getItem('List2letterboxd_parsed');
+        return cached ? JSON.parse(cached) : [];
+    });
     const [loading, setLoading] = useState(false);
     const [pickerIndex, setPickerIndex] = useState<number | null>(null);
     const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
@@ -34,6 +40,16 @@ export const Home: React.FC = () => {
                 textarea.style.height = textarea.scrollHeight + 'px';
             }
         });
+    }, [parsed]);
+
+    // Cache input to localStorage
+    useEffect(() => {
+        localStorage.setItem('List2letterboxd_input', input);
+    }, [input]);
+
+    // Cache parsed data to localStorage
+    useEffect(() => {
+        localStorage.setItem('List2letterboxd_parsed', JSON.stringify(parsed));
     }, [parsed]);
 
 
