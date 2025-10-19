@@ -41,6 +41,24 @@
   transform: scale(1.05);
 }
 
+.row-ambiguous {
+  background-color: rgba(255, 213, 128, 0.25);
+}
+
+.title-button {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  color: #856404;
+  cursor: pointer;
+  padding: 6px;
+  font: inherit;
+  border-radius: 4px;
+  position: relative;
+  width: 100%;
+  text-align: left;
+}
+
+
 .preview-table {
   width: 100%;
   border-collapse: collapse;
@@ -57,6 +75,15 @@
   background-color: #f3f4f6; /* light gray */
 }
 
+.preview-table th:nth-child(2),
+.preview-table td:nth-child(2) {
+  text-align: center;
+}
+
+.preview-table td:nth-child(2) .cell-input {
+  text-align: center;
+}
+
 .preview-table td {
   background-color: #ffffff;
 }
@@ -67,7 +94,7 @@
   border: none;
   background: transparent;
   padding: 6px;
-  font-size: 14px;
+  font-size: 16px;
   box-sizing: border-box;
 }
 
@@ -78,4 +105,50 @@
 
 .preview-table td {
   padding: 0;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  max-width: 520px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.candidate-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+}
+
+.candidate-button {
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border: 1px solid #e0e0e0;
+  background: #fafafa;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.candidate-button:hover {
+  background: #f0f7ff;
+  border-color: #cde1ff;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
 }

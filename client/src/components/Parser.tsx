@@ -4,6 +4,8 @@ export type FilmEntry = {
   rating?: number; // normalized to /5 with .5 steps (e.g. 7/10 -> 3.5)
   review?: string;
   liked?: boolean; // intentionally unused/left blank
+  // possible TMDB candidates for disambiguation
+  candidates?: Array<{ title: string; tmdbId: number; releaseYear?: number }>;
 };
 
 export function parseFilmText(input: string): FilmEntry[] {
@@ -15,7 +17,13 @@ export function parseFilmText(input: string): FilmEntry[] {
   const results: FilmEntry[] = [];
 
   for (let line of lines) {
-    // 0) Strip bullets/checkboxes ONLY (don't infer "liked")
+    // 0) Check if this is an unwatched item (empty checkbox) and skip it
+    const isUnwatched = /^\s*[-*•]?\s*\[\s*\]/.test(line);
+    if (isUnwatched) {
+      continue; // Skip unwatched items
+    }
+
+    // 1) Strip bullets/checkboxes (but preserve the fact that it was watched)
     line = line.replace(
       /^\s*(?:[-*•]+|\d+[.)])?\s*(?:\[(?:x|X|\s)?\])?\s*/,
       ""
@@ -138,16 +146,20 @@ export async function matchWithTmdb(
   }
 
   const data = await res.json() as {
-    matches: Array<{ input_title: string; title?: string; tmdb_id?: number }>;
+    matches: Array<{ input_title: string; title?: string; tmdb_id?: number; candidates?: Array<{ title?: string; tmdb_id?: number; release_year?: number }> }>;
   };
 
   // zip results back to entries (order preserved)
   return entries.map((e, i) => {
     const m = data.matches?.[i];
+    const candidates = (m?.candidates || [])
+      .filter(c => c?.title && typeof c.tmdb_id === 'number')
+      .map(c => ({ title: c.title as string, tmdbId: c.tmdb_id as number, releaseYear: c.release_year }));
     return {
       ...e,
       title: m?.title || e.title,     // replace with canonical title if found
       tmdbId: m?.tmdb_id ?? e.tmdbId, // add tmdb id
+      candidates,
     };
   });
 }

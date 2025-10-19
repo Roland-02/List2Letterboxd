@@ -71,7 +71,21 @@ def match_one(title: str, *, language: str) -> Dict[str, Any]:
         "title": None,
         "tmdb_id": None,
         "release_year": None,
+        # include a compact list of alternative candidates for UI disambiguation
+        "candidates": [],
     }
+
+    # prepare compact candidates (top 5)
+    compact_candidates: List[Dict[str, Any]] = []
+    for res in (hits or [])[:5]:
+        rd = res.get("release_date")
+        year = int(rd[:4]) if isinstance(rd, str) and len(rd) >= 4 and rd[:4].isdigit() else None
+        compact_candidates.append({
+            "title": res.get("title"),
+            "tmdb_id": res.get("id"),
+            "release_year": year,
+        })
+    out["candidates"] = compact_candidates
 
     if not best:
         return out
