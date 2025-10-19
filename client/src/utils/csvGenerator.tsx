@@ -1,8 +1,9 @@
 import { FilmEntry } from '../components/Parser';
 
 export function generateCSV(data: FilmEntry[]): string {
-  const header = ['Title', 'Rating', 'Review', 'Liked'];
+  const header = ['tmdbID', 'Title', 'Rating', 'Review'];
   const rows = data.map((film) => [
+    film.tmdbId?.toString() || '',
     escapeCSV(film.title),
     film.rating?.toString() || '',
     escapeCSV(film.review || ''),

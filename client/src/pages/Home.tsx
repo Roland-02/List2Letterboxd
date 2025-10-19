@@ -75,6 +75,7 @@ export const Home: React.FC = () => {
                                 <th>Rating (/5)</th>
                                 <th>Review</th>
                                 <th>Loved it</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -150,6 +151,19 @@ export const Home: React.FC = () => {
                                             title={movie.liked ? "Loved it" : "Click to love"}
                                         >
                                             ♥
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button
+                                            type="button"
+                                            className="remove-button"
+                                            onClick={() => {
+                                                const updated = parsed.filter((_, i) => i !== idx);
+                                                setParsed(updated);
+                                            }}
+                                            title="Remove this film"
+                                        >
+                                            ×
                                         </button>
                                     </td>
                                 </tr>

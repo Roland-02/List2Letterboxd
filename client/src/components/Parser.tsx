@@ -18,10 +18,6 @@ export function parseFilmText(input: string): FilmEntry[] {
 
   for (let line of lines) {
     // 0) Check if this is an unwatched item (empty checkbox) and skip it
-    const isUnwatched = /^\s*[-*•]?\s*\[\s*\]/.test(line);
-    if (isUnwatched) {
-      continue; // Skip unwatched items
-    }
 
     // 1) Strip bullets/checkboxes (but preserve the fact that it was watched)
     line = line.replace(
@@ -146,20 +142,31 @@ export async function matchWithTmdb(
   }
 
   const data = await res.json() as {
-    matches: Array<{ input_title: string; title?: string; tmdb_id?: number; candidates?: Array<{ title?: string; tmdb_id?: number; release_year?: number; summary?: string }> }>;
+    matches: Array<{ input_title: string; title?: string; tmdb_id?: number; candidates?: Array<{ title?: string; tmdb_id?: number; release_year?: number; summary?: string }>; is_tv_show?: boolean }>;
   };
 
-  // zip results back to entries (order preserved)
-  return entries.map((e, i) => {
+  // Filter out TV shows and zip results back to entries (order preserved)
+  const results: FilmEntry[] = [];
+  
+  entries.forEach((e, i) => {
     const m = data.matches?.[i];
+    
+    // Skip TV shows
+    if (m?.is_tv_show) {
+      return;
+    }
+    
     const candidates = (m?.candidates || [])
       .filter(c => c?.title && typeof c.tmdb_id === 'number')
       .map(c => ({ title: c.title as string, tmdbId: c.tmdb_id as number, releaseYear: c.release_year, summary: c.summary }));
-    return {
+    
+    results.push({
       ...e,
       title: m?.title || e.title,     // replace with canonical title if found
       tmdbId: m?.tmdb_id ?? e.tmdbId, // add tmdb id
       candidates,
-    };
+    });
   });
+  
+  return results;
 }

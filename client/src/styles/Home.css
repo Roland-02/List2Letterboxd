@@ -224,3 +224,23 @@
 .heart-button:hover {
   color: #07bc6a;
 }
+
+.preview-table th:nth-child(5),
+.preview-table td:nth-child(5) {
+  width: 40px;
+  text-align: center;
+}
+
+.remove-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #999;
+  transition: color 0.15s ease;
+  line-height: 1;
+}
+
+.remove-button:hover {
+  color: #e74c3c;
+}

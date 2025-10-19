@@ -193,9 +193,34 @@ def tmdb_match():
     except Exception:
         limit = 10
 
-    # Run with bounded concurrency; order preserved by executor.map
+    # Step 1: Check which titles are movies (filter out TV shows)
     with ThreadPoolExecutor(max_workers=limit) as ex:
-        results = list(ex.map(lambda t: match_one(t, language=language), titles))
+        movie_checks = list(ex.map(lambda t: check_is_movie(t, language=language), titles))
+    
+    # Step 2: Only match titles that are movies
+    movie_titles = [t for t, is_movie in zip(titles, movie_checks) if is_movie]
+    
+    # Step 3: Match the movie titles with TMDB
+    with ThreadPoolExecutor(max_workers=limit) as ex:
+        movie_results = list(ex.map(lambda t: match_one(t, language=language), movie_titles))
+    
+    # Step 4: Build final results, inserting None for TV shows
+    results = []
+    movie_idx = 0
+    for i, is_movie in enumerate(movie_checks):
+        if is_movie:
+            results.append(movie_results[movie_idx])
+            movie_idx += 1
+        else:
+            # TV show - return empty result
+            results.append({
+                "input_title": titles[i],
+                "title": None,
+                "tmdb_id": None,
+                "release_year": None,
+                "candidates": [],
+                "is_tv_show": True,
+            })
 
     return jsonify({"matches": results})
 
