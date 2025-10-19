@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { parseFilmText, FilmEntry, matchWithTmdb} from '../components/Parser';
 import { generateCSV, downloadCSV } from '../utils/csvGenerator';
 import '../styles/Home.css';
@@ -8,6 +8,7 @@ export const Home: React.FC = () => {
     const [parsed, setParsed] = useState<FilmEntry[]>([]);
     const [loading, setLoading] = useState(false);
     const [pickerIndex, setPickerIndex] = useState<number | null>(null);
+    const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
 
     const handleGenerate = async () => {
         setLoading(true);
@@ -24,6 +25,16 @@ export const Home: React.FC = () => {
         const csv = generateCSV(parsed);
         downloadCSV(csv);
     };
+
+    // Auto-resize textareas when parsed data changes
+    useEffect(() => {
+        textareaRefs.current.forEach((textarea) => {
+            if (textarea) {
+                textarea.style.height = 'auto';
+                textarea.style.height = textarea.scrollHeight + 'px';
+            }
+        });
+    }, [parsed]);
 
 
     return (
@@ -96,15 +107,19 @@ export const Home: React.FC = () => {
                                         />
                                     </td>
                                     <td>
-                                        <input
-                                            type="text"
+                                        <textarea
+                                            ref={(el) => { textareaRefs.current[idx] = el; }}
                                             value={movie.review || ''}
                                             onChange={(e) => {
                                                 const updated = [...parsed];
                                                 updated[idx].review = e.target.value;
                                                 setParsed(updated);
+                                                // Auto-resize textarea
+                                                e.target.style.height = 'auto';
+                                                e.target.style.height = e.target.scrollHeight + 'px';
                                             }}
-                                            className="cell-input"
+                                            className="cell-textarea"
+                                            rows={1}
                                         />
                                     </td>
                                     <td>
@@ -147,7 +162,14 @@ export const Home: React.FC = () => {
                                     setPickerIndex(null);
                                   }}
                                 >
-                                  {c.title}{c.releaseYear ? ` (${c.releaseYear})` : ''}
+                                  <div className="candidate-title">
+                                    {c.title}{c.releaseYear ? ` (${c.releaseYear})` : ''}
+                                  </div>
+                                  {c.summary && (
+                                    <div className="candidate-summary">
+                                      {c.summary}
+                                    </div>
+                                  )}
                                 </button>
                               </li>
                             ))}

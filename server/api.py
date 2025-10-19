@@ -52,14 +52,40 @@ def _pick_best(results: List[Dict[str, Any]], title: str) -> Optional[Dict[str, 
 
 
 # --- TMDB client (sync) ---
+def tmdb_search_multi(title: str, *, language: str) -> List[Dict[str, Any]]:
+    """Search both movies and TV shows to check media type"""
+    params = {"query": title, "include_adult": "false", "page": 1, "language": language}
+    res = session.get(f"{TMDB_BASE}/search/multi", params=params, timeout=15)
+    if not res.ok:
+        return []
+    data = res.json()
+    return data.get("results") or []
+
 def tmdb_search_movie(title: str, *, language: str) -> List[Dict[str, Any]]:
     params = {"query": title, "include_adult": "false", "page": 1, "language": language}
     res = session.get(f"{TMDB_BASE}/search/movie", params=params, timeout=15)
     if not res.ok:
         return []
     data = res.json()
-    return data.get("results") or []
+    results = data.get("results") or []
+    return results
 
+
+def check_is_movie(title: str, *, language: str) -> bool:
+    """Check if a title is a movie (not TV show)"""
+    clean = title.strip()
+    results = tmdb_search_multi(clean, language=language)
+    
+    # Look for movie results
+    for result in results[:5]:  # Check top 5 results
+        media_type = result.get("media_type")
+        if media_type == "movie":
+            return True
+        elif media_type == "tv":
+            return False
+    
+    # If no clear match, default to True (assume it's a movie)
+    return True
 
 def match_one(title: str, *, language: str) -> Dict[str, Any]:
     clean = title.strip()
@@ -80,10 +106,16 @@ def match_one(title: str, *, language: str) -> Dict[str, Any]:
     for res in (hits or [])[:5]:
         rd = res.get("release_date")
         year = int(rd[:4]) if isinstance(rd, str) and len(rd) >= 4 and rd[:4].isdigit() else None
+        overview = res.get("overview", "")
+        # Truncate overview to first sentence or 100 chars, whichever is shorter
+        summary = overview.split('.')[0] if overview else ""
+        if len(summary) > 100:
+            summary = summary[:97] + "..."
         compact_candidates.append({
             "title": res.get("title"),
             "tmdb_id": res.get("id"),
             "release_year": year,
+            "summary": summary,
         })
     out["candidates"] = compact_candidates
 
@@ -102,6 +134,38 @@ def match_one(title: str, *, language: str) -> Dict[str, Any]:
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({"ok": True})
+
+
+@app.route("/tmdb/check-movies", methods=["POST", "OPTIONS"])
+def tmdb_check_movies():
+    if request.method == "OPTIONS":
+        return ("", 204)
+
+    data = request.get_json(force=True, silent=True) or {}
+    queries = data.get("queries")
+
+    if not isinstance(queries, list) or not queries:
+        return jsonify({"error": "queries must be a non-empty list"}), 400
+
+    # Support both [{ "title": "..." }, ...] and ["...", ...]
+    titles: List[str] = []
+    for q in queries:
+        if isinstance(q, dict) and isinstance(q.get("title"), str):
+            titles.append(q["title"])
+        else:
+            titles.append(str(q))
+
+    language = data.get("language") or "en-US"
+    try:
+        limit = max(1, min(int(data.get("concurrency", 10)), 50))
+    except Exception:
+        limit = 10
+
+    # Run with bounded concurrency; order preserved by executor.map
+    with ThreadPoolExecutor(max_workers=limit) as ex:
+        results = list(ex.map(lambda t: {"title": t, "is_movie": check_is_movie(t, language=language)}, titles))
+
+    return jsonify({"results": results})
 
 
 @app.route("/tmdb/match", methods=["POST", "OPTIONS"])

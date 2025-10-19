@@ -103,6 +103,24 @@
   background-color: #f0f8ff;
 }
 
+.cell-textarea {
+  width: 100%;
+  min-height: 34px; /* Match input height */
+  border: none;
+  background: transparent;
+  padding: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
+  resize: none;
+  font-family: inherit;
+  overflow: hidden;
+}
+
+.cell-textarea:focus {
+  outline: none;
+  background-color: #f0f8ff;
+}
+
 .preview-table td {
   padding: 0;
 }
@@ -135,7 +153,7 @@
 .candidate-button {
   width: 100%;
   text-align: left;
-  padding: 8px 10px;
+  padding: 12px 10px;
   border: 1px solid #e0e0e0;
   background: #fafafa;
   border-radius: 6px;
@@ -146,6 +164,19 @@
 .candidate-button:hover {
   background: #f0f7ff;
   border-color: #cde1ff;
+}
+
+.candidate-title {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.candidate-summary {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.4;
 }
 
 .modal-actions {

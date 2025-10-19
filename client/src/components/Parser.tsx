@@ -5,7 +5,7 @@ export type FilmEntry = {
   review?: string;
   liked?: boolean; // intentionally unused/left blank
   // possible TMDB candidates for disambiguation
-  candidates?: Array<{ title: string; tmdbId: number; releaseYear?: number }>;
+  candidates?: Array<{ title: string; tmdbId: number; releaseYear?: number; summary?: string }>;
 };
 
 export function parseFilmText(input: string): FilmEntry[] {
@@ -146,7 +146,7 @@ export async function matchWithTmdb(
   }
 
   const data = await res.json() as {
-    matches: Array<{ input_title: string; title?: string; tmdb_id?: number; candidates?: Array<{ title?: string; tmdb_id?: number; release_year?: number }> }>;
+    matches: Array<{ input_title: string; title?: string; tmdb_id?: number; candidates?: Array<{ title?: string; tmdb_id?: number; release_year?: number; summary?: string }> }>;
   };
 
   // zip results back to entries (order preserved)
@@ -154,7 +154,7 @@ export async function matchWithTmdb(
     const m = data.matches?.[i];
     const candidates = (m?.candidates || [])
       .filter(c => c?.title && typeof c.tmdb_id === 'number')
-      .map(c => ({ title: c.title as string, tmdbId: c.tmdb_id as number, releaseYear: c.release_year }));
+      .map(c => ({ title: c.title as string, tmdbId: c.tmdb_id as number, releaseYear: c.release_year, summary: c.summary }));
     return {
       ...e,
       title: m?.title || e.title,     // replace with canonical title if found
