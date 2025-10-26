@@ -1,24 +1,34 @@
 import { FilmEntry } from '../components/Parser';
 
 export function generateCSV(data: FilmEntry[]): string {
-  const header = ['tmdbID', 'Title', 'Rating', 'Review'];
+  const header = ['tmdbID', 'Title', 'Rating', 'Review', 'Liked'];
   
-  // Filter out entries without tmdbId
-  const validFilms = data.filter(film => film.tmdbId);
-  
-  const rows = validFilms.map((film) => [
+  const rows = data.map((film) => [
     film.tmdbId?.toString() || '',
     escapeCSV(film.title),
     film.rating?.toString() || '',
-    escapeCSV(film.review || ''),
+    escapeCSV(convertToHTML(film.review || '')),
+    film.liked ? 'Yes' : 'No',
   ]);
 
   return [header, ...rows].map((row) => row.join(',')).join('\n');
 }
 
+function convertToHTML(text: string): string {
+  if (!text) return '';
+  
+  // Convert line breaks to HTML <br> tags
+  // Handle both \n and \r\n line endings
+  return text
+    .replace(/\r\n/g, '<br>')
+    .replace(/\n/g, '<br>')
+    .trim();
+}
+
 function escapeCSV(text: string): string {
   if (text.includes(',') || text.includes('"') || text.includes('\n')) {
-    return `"${text.replace(/"/g, '\\"')}"`;
+    // Escape quotes by doubling them (CSV standard)
+    return `"${text.replace(/"/g, '""')}"`;
   }
   return text;
 }
