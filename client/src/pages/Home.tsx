@@ -74,7 +74,6 @@ export const Home: React.FC = () => {
                                 <th>Title</th>
                                 <th>Rating (/5)</th>
                                 <th>Review</th>
-                                <th>Loved it</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -150,20 +149,6 @@ export const Home: React.FC = () => {
                                             className="cell-textarea"
                                             rows={1}
                                         />
-                                    </td>
-                                    <td>
-                                        <button
-                                            type="button"
-                                            className={`heart-button ${movie.liked ? 'loved' : ''}`}
-                                            onClick={() => {
-                                                const updated = [...parsed];
-                                                updated[idx].liked = !movie.liked;
-                                                setParsed(updated);
-                                            }}
-                                            title={movie.liked ? "Loved it" : "Click to love"}
-                                        >
-                                            ♥
-                                        </button>
                                     </td>
                                     <td>
                                         <button

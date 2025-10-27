@@ -1,7 +1,7 @@
 import { FilmEntry } from '../components/Parser';
 
 export function generateCSV(data: FilmEntry[]): string {
-  const header = ['tmdbID', 'Title', 'Rating', 'Review', 'Liked'];
+  const header = ['tmdbID', 'Title', 'Rating', 'Review'];
   
   // Filter out entries without tmdbId
   const validFilms = data.filter(film => film.tmdbId);
@@ -11,7 +11,6 @@ export function generateCSV(data: FilmEntry[]): string {
     escapeCSV(film.title),
     film.rating?.toString() || '',
     escapeCSV(convertToHTML(film.review || '')),
-    film.liked ? 'Yes' : 'No',
   ]);
 
   return [header, ...rows].map((row) => row.join(',')).join('\n');
