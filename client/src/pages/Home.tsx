@@ -81,8 +81,14 @@ export const Home: React.FC = () => {
                         <tbody>
                             {parsed.map((movie, idx) => {
                                 const hasMultipleCandidates = (movie.candidates?.length || 0) > 1;
+                                const hasNoMatch = !movie.tmdbId;
+                                const hasGoodMatch = movie.tmdbId && !hasMultipleCandidates;
                                 return (
-                                <tr key={idx} className={hasMultipleCandidates ? 'row-ambiguous' : undefined}>
+                                <tr key={idx} className={
+                                    hasMultipleCandidates ? 'row-ambiguous' : 
+                                    hasNoMatch ? 'row-no-match' : 
+                                    hasGoodMatch ? 'row-good-match' : undefined
+                                }>
                                     <td>
                                         {hasMultipleCandidates ? (
                                             <button
@@ -94,16 +100,23 @@ export const Home: React.FC = () => {
                                               {movie.title}
                                             </button>
                                         ) : (
-                                            <input
-                                                type="text"
-                                                value={movie.title}
-                                                onChange={(e) => {
-                                                    const updated = [...parsed];
-                                                    updated[idx].title = e.target.value;
-                                                    setParsed(updated);
-                                                }}
-                                                className="cell-input"
-                                            />
+                                            <div className="title-input-wrapper">
+                                                <input
+                                                    type="text"
+                                                    value={movie.title}
+                                                    onChange={(e) => {
+                                                        const updated = [...parsed];
+                                                        updated[idx].title = e.target.value;
+                                                        setParsed(updated);
+                                                    }}
+                                                    className={`cell-input ${hasNoMatch ? 'no-match' : ''}`}
+                                                />
+                                                {hasNoMatch && (
+                                                    <span className="no-match-icon" title="Film not found">
+                                                        ⚠
+                                                    </span>
+                                                )}
+                                            </div>
                                         )}
                                     </td>
                                     <td>

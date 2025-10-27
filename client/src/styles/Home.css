@@ -55,6 +55,14 @@
   background-color: rgba(255, 213, 128, 0.25);
 }
 
+.row-no-match {
+  background-color: rgba(255, 200, 200, 0.25);
+}
+
+.row-good-match {
+  background-color: rgba(200, 255, 200, 0.25);
+}
+
 .title-button {
   background: #fff3cd;
   border: 1px solid #ffeaa7;
@@ -73,13 +81,16 @@
   width: 100%;
   border-collapse: collapse;
   border-radius: 8px;
-  overflow: hidden;
+  overflow: visible;
+  table-layout: auto;
 }
 
 .preview-table th:nth-child(1),
 .preview-table td:nth-child(1) {
-  width: 1%;
-  white-space: nowrap;
+  width: auto;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .preview-table th:nth-child(2),
@@ -127,6 +138,13 @@
   background-color: #ffffff;
 }
 
+.title-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
 .cell-input {
   width: 100%;
   height: 100%;
@@ -135,6 +153,17 @@
   padding: 6px;
   font-size: 16px;
   box-sizing: border-box;
+}
+
+.cell-input.no-match {
+  background-color: rgba(255, 200, 200, 0.2);
+}
+
+.no-match-icon {
+  color: #dc3545;
+  font-size: 18px;
+  cursor: help;
+  flex-shrink: 0;
 }
 
 .cell-input:focus {
@@ -233,10 +262,16 @@
 .heart-button {
   background: none;
   border: none;
-  font-size: 40px;
+  font-size: 60px;
+  width: 100%;
+  height: 100%;
+  padding: 0;
   cursor: pointer;
   color: #ccc;
   transition: color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .heart-button.loved {
