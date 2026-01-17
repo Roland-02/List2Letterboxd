@@ -185,6 +185,26 @@
   flex-shrink: 0;
 }
 
+.retry-button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+}
+
+.retry-button:hover {
+  background-color: #e0e0e0;
+}
+
+.retry-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
 .cell-input:focus {
   outline: none;
   background-color: #f0f8ff;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { parseFilmText, FilmEntry, matchWithTmdb} from '../components/Parser';
+import { parseFilmText, FilmEntry, matchWithTmdb, rematchSingleFilm } from '../components/Parser';
 import { generateCSV, downloadCSV } from '../utils/csvGenerator';
 import '../styles/Home.css';
 
@@ -14,7 +14,20 @@ export const Home: React.FC = () => {
     });
     const [loading, setLoading] = useState(false);
     const [pickerIndex, setPickerIndex] = useState<number | null>(null);
+    const [retryingIndex, setRetryingIndex] = useState<number | null>(null);
     const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
+
+    const handleRetry = async (idx: number) => {
+        setRetryingIndex(idx);
+        try {
+            const updated = [...parsed];
+            const rematched = await rematchSingleFilm(updated[idx]);
+            updated[idx] = rematched;
+            setParsed(updated);
+        } finally {
+            setRetryingIndex(null);
+        }
+    };
 
     const handleGenerate = async () => {
         setLoading(true);
@@ -111,9 +124,15 @@ export const Home: React.FC = () => {
                                                     className={`cell-input ${hasNoMatch ? 'no-match' : ''}`}
                                                 />
                                                 {hasNoMatch && (
-                                                    <span className="no-match-icon" title="Film not found">
-                                                        ⚠
-                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        className="retry-button"
+                                                        onClick={() => handleRetry(idx)}
+                                                        disabled={retryingIndex === idx}
+                                                        title="Retry search"
+                                                    >
+                                                        {retryingIndex === idx ? '...' : '🔄'}
+                                                    </button>
                                                 )}
                                             </div>
                                         )}
