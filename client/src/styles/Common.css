@@ -20,22 +20,7 @@
     text-decoration: none;
 }
 
-.navbar-links {
-    display: flex;
-    align-items: center;
-    gap: 25px;
-}
-
 .navbar-link {
-    display: flex;
-    align-items: center;
-}
-
-.navbar-button {
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
     display: flex;
     align-items: center;
 }
@@ -100,5 +85,13 @@
     transform: scale(1.1);
 }
 
+.footer-text a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.footer-text a:hover {
+    text-decoration: underline;
+}
 
 /* END FOOTER */

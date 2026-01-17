@@ -1,7 +1,5 @@
-// src/components/Footer.tsx
 import React from 'react';
 import { FaGithub } from 'react-icons/fa';
-
 import '../styles/Common.css';
 
 export const Footer: React.FC = () => {
@@ -17,7 +15,7 @@ export const Footer: React.FC = () => {
                     <span className="footer-link-text">Website developed by Roland Olajide</span>
                     <FaGithub className="footer-icon" />
                 </a>
-                &nbsp;·&nbsp; Not affiliated with Letterboxd
+                &nbsp;·&nbsp; Not affiliated with <a href="https://letterboxd.com" target="_blank" rel="noopener noreferrer">Letterboxd.com</a>
             </p>
         </footer>
     );
