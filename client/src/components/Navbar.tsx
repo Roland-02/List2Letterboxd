@@ -15,7 +15,7 @@ export const Navbar: React.FC = () => {
             </Link>
 
             <Link to="/" className="navbar-title">
-                Letterboxd CSV
+                List2Letterboxd
             </Link>
 
             <a href="https://letterboxd.com/import/" target="_blank" rel="noopener noreferrer" className="navbar-link">

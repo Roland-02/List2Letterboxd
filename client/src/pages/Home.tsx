@@ -45,6 +45,11 @@ export const Home: React.FC = () => {
         downloadCSV(csv);
     };
 
+    const handleClear = () => {
+        setInput('');
+        setParsed([]);
+    };
+
     // Auto-resize textareas when parsed data changes
     useEffect(() => {
         textareaRefs.current.forEach((textarea) => {
@@ -68,12 +73,19 @@ export const Home: React.FC = () => {
 
     return (
         <div className="home-container">
-            <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Paste your films and ratings here..."
-                className="home-textarea"
-            />
+            <div className="textarea-wrapper">
+                <textarea
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder="Paste your films and ratings here..."
+                    className="home-textarea"
+                />
+                {(input || parsed.length > 0) && (
+                    <button onClick={handleClear} className="clear-button" title="Clear all">
+                        Clear
+                    </button>
+                )}
+            </div>
 
             <button onClick={handleGenerate} className="home-button" disabled={loading}>
                 {loading ? 'Parsing...' : 'Preview'}
